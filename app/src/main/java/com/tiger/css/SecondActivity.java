@@ -12,7 +12,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -24,7 +23,7 @@ import com.tiger.css.object.Client;
 import com.tiger.css.object.Partner;
 import com.tiger.css.util.ProgressBarAnimation;
 
-public class TwoActivity extends AppCompatActivity {
+public class SecondActivity extends AppCompatActivity {
 
     private Client mClient = new Client();
     private Partner mPartner = new Partner();
@@ -42,7 +41,7 @@ public class TwoActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_two);
+        setContentView(R.layout.activity_second);
 
         this.getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getSupportActionBar().setDisplayShowCustomEnabled(true);
@@ -97,8 +96,8 @@ public class TwoActivity extends AppCompatActivity {
                 ){
                     if(check){
                         check = false;
-                        Intent intent = new Intent(TwoActivity.this,FirstActivity.class);
-                        TwoActivity.this.startActivity(intent);
+                        Intent intent = new Intent(SecondActivity.this,FirstActivity.class);
+                        SecondActivity.this.startActivity(intent);
                         finish();
                     }
                 }

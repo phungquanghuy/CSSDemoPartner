@@ -85,7 +85,7 @@ public class FirstActivity extends AppCompatActivity {
                     && !mPartner.getStatus().equals("actived")
                     && !mPartner.getStatus().equals("busy")
                 ){
-                    Intent intent = new Intent(FirstActivity.this,TwoActivity.class);
+                    Intent intent = new Intent(FirstActivity.this, SecondActivity.class);
                     FirstActivity.this.startActivity(intent);
                     finish();
                 }
