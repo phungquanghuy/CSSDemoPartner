@@ -5,9 +5,11 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -22,7 +24,6 @@ public class FirstActivity extends AppCompatActivity {
 
     private ImageView avatar;
     private Partner mPartner = new Partner();
-    private Patron mPatron = new Patron();
     private Button active;
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mDatabaseReference;
@@ -37,7 +38,6 @@ public class FirstActivity extends AppCompatActivity {
         getSupportActionBar().setCustomView(R.layout.custom_actionbar);
 
         avatar = (ImageView) findViewById(R.id.avatar);
-        Picasso.get().load(mPartner.getUrl()).into(avatar);
         active = (Button) findViewById(R.id.active);
 
         mFirebaseDatabase = FirebaseDatabase.getInstance();
@@ -49,17 +49,18 @@ public class FirstActivity extends AppCompatActivity {
                 toggleBtn();
             }
         });
+
         statusChange();
     }
 
     protected void toggleBtn(){
-        if(!mPartner.getStatus().equals("offline")){
-            mPartner.setStatus("offline");
-            mDatabaseReference.child(mPartner.getUsername()).child("status").setValue("offline");
-        }
-        else{
+        if(mPartner.getStatus().equals("offline")){
             mPartner.setStatus("actived");
             mDatabaseReference.child(mPartner.getUsername()).child("status").setValue("actived");
+        }
+        else{
+            mPartner.setStatus("offline");
+            mDatabaseReference.child(mPartner.getUsername()).child("status").setValue("offline");
         }
     }
 
@@ -82,6 +83,7 @@ public class FirstActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 mPartner = dataSnapshot.getValue(Partner.class);
                 statusBtn();
+                Picasso.get().load(mPartner.getUrl()).into(avatar);
                 if(!mPartner.getStatus().equals("offline")
                     && !mPartner.getStatus().equals("actived")
                     && !mPartner.getStatus().equals("busy")
@@ -90,6 +92,7 @@ public class FirstActivity extends AppCompatActivity {
                     FirstActivity.this.startActivity(intent);
                     finish();
                 }
+
             }
 
             @Override

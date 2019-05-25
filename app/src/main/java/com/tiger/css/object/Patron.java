@@ -1,7 +1,7 @@
 package com.tiger.css.object;
 
 public class Patron {
-    private String url, username, name, phone, email, info, status;
+    private String url, username, name, phone, email, info, status, request, address, location;
 
     public Patron() {this.username = "patron1";
     }
@@ -70,5 +70,29 @@ public class Patron {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getRequest() {
+        return request;
+    }
+
+    public void setRequest(String request) {
+        this.request = request;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
     }
 }

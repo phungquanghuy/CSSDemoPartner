@@ -20,7 +20,7 @@
         tools:ignore="MissingConstraints" />
 
     <Button
-        android:id="@+id/accept"
+        android:id="@+id/acceptBtn"
         android:layout_width="0dp"
         android:layout_height="55dp"
         android:layout_marginStart="16dp"
@@ -31,13 +31,13 @@
         android:textColor="#FFFFFF"
         android:textSize="16sp"
         android:stateListAnimator="@null"
-        app:layout_constraintBottom_toTopOf="@+id/button2"
+        app:layout_constraintBottom_toTopOf="@+id/cancelBtn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/cancelBtn"
         android:layout_width="0dp"
         android:layout_height="55dp"
         android:layout_marginBottom="16dp"
@@ -46,8 +46,8 @@
         android:textSize="16sp"
         android:stateListAnimator="@null"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/accept"
-        app:layout_constraintStart_toStartOf="@+id/accept" />
+        app:layout_constraintEnd_toEndOf="@+id/acceptBtn"
+        app:layout_constraintStart_toStartOf="@+id/acceptBtn" />
 
     <TextView
         android:id="@+id/patronInfo"
@@ -55,11 +55,22 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/accept"
+        android:textColor="#000000"
+        android:textSize="16sp"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/patronAvt"
-        app:layout_constraintTop_toTopOf="@+id/patronAvt"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintTop_toTopOf="@+id/patronAvt" />
+
+    <TextView
+        android:id="@+id/request"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textColor="#000000"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="@+id/patronInfo"
+        app:layout_constraintStart_toStartOf="@+id/patronInfo"
+        app:layout_constraintTop_toBottomOf="@+id/patronInfo" />
 </android.support.constraint.ConstraintLayout>
