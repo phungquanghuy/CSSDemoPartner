@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">css</string>
+    <string name="name">Nhập tên</string>
+    <string name="email">Nhập email</string>
+    <string name="action_save">Lưu</string>
+    <string name="active">Active</string>
+</resources>
