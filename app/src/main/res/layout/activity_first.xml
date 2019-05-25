@@ -7,17 +7,16 @@
     tools:context=".FirstActivity">
 
     <Button
-        android:id="@+id/on_off"
+        android:id="@+id/active"
         android:layout_width="0dp"
         android:layout_height="55dp"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
-        android:background="@drawable/on_off_button"
+        android:background="@drawable/active_btn"
         android:text="@string/active"
         android:textColor="#FFFFFF"
         android:textSize="16sp"
-        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/mapView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
