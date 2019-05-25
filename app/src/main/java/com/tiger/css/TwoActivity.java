@@ -2,6 +2,7 @@ package com.tiger.css;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -9,7 +10,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -19,14 +22,19 @@ import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 import com.tiger.css.object.Client;
 import com.tiger.css.object.Partner;
+import com.tiger.css.util.ProgressBarAnimation;
 
 public class TwoActivity extends AppCompatActivity {
 
     private Client mClient = new Client();
     private Partner mPartner = new Partner();
     private ImageView clientAvt,partnerAvt;
-    private TextView clientInfo, title, request;
+    private TextView clientInfo, title, request, address, countdown;
     private Button acceptBtn, cancelBtn;
+    private long countSeconds = 21000;
+    private CountDownTimer mCountDownTimer;
+    private ProgressBar countdownPro;
+    private Boolean check = true;
 
     private DatabaseReference partnerDb, clientDb;
     private FirebaseDatabase partnerFb, clientFb;
@@ -40,13 +48,20 @@ public class TwoActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowCustomEnabled(true);
         getSupportActionBar().setCustomView(R.layout.custom_actionbar);
 
-        clientAvt = (ImageView) findViewById(R.id.clientAvt);
-        partnerAvt = (ImageView) findViewById(R.id.avatar);
-        clientInfo = (TextView) findViewById(R.id.clientInfo);
-        title = (TextView) findViewById(R.id.title);
-        request = (TextView) findViewById(R.id.request);
-        acceptBtn = (Button) findViewById(R.id.acceptBtn);
-        cancelBtn = (Button) findViewById(R.id.cancelBtn);
+        clientAvt = findViewById(R.id.clientAvt);
+        partnerAvt =  findViewById(R.id.avatar);
+        clientInfo =  findViewById(R.id.clientInfo);
+        title =  findViewById(R.id.title);
+        request =  findViewById(R.id.request);
+        address = findViewById(R.id.address);
+        countdown = findViewById(R.id.countdown);
+        acceptBtn =  findViewById(R.id.acceptBtn);
+        cancelBtn =  findViewById(R.id.cancelBtn);
+        countdownPro =  findViewById(R.id.countdownPro);
+
+        ProgressBarAnimation anim = new ProgressBarAnimation(countdownPro, 100, 0);
+        anim.setDuration(22000);
+        countdownPro.startAnimation(anim);
 
         partnerFb = FirebaseDatabase.getInstance();
         partnerDb = partnerFb.getReference("Partner");
@@ -54,6 +69,7 @@ public class TwoActivity extends AppCompatActivity {
         clientDb = clientFb.getReference("Client");
 
         getInfo();
+        startTimer();
 
         cancelBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -79,9 +95,12 @@ public class TwoActivity extends AppCompatActivity {
                         || mPartner.getStatus().equals("actived")
                         || mPartner.getStatus().equals("busy")
                 ){
-                    Intent intent = new Intent(TwoActivity.this,FirstActivity.class);
-                    TwoActivity.this.startActivity(intent);
-                    finish();
+                    if(check){
+                        check = false;
+                        Intent intent = new Intent(TwoActivity.this,FirstActivity.class);
+                        TwoActivity.this.startActivity(intent);
+                        finish();
+                    }
                 }
                 else {
                     clientDb.child(mPartner.getStatus()).addValueEventListener(new ValueEventListener() {
@@ -93,6 +112,7 @@ public class TwoActivity extends AppCompatActivity {
                             clientInfo.setText(mClient.getName()+"\n"
                                     + mClient.getInfo());
                             title.setText("Mã khách hàng: CSS-"+ mClient.getUsername());
+                            address.setText("Địa chỉ: "+mClient.getAddress());
                             request.setText("Yêu cầu hỗ trợ: "+ mClient.getRequest());
                         }
 
@@ -111,4 +131,22 @@ public class TwoActivity extends AppCompatActivity {
         });
 
     }
+
+    protected void startTimer(){
+        mCountDownTimer = new CountDownTimer(countSeconds, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                countSeconds = millisUntilFinished;
+                countdown.setText(countSeconds/1000+"");
+            }
+
+            @Override
+            public void onFinish() {
+                countdown.setText(0+"");
+                partnerDb.child(mPartner.getUsername()).child("status").setValue("actived");
+            }
+        }.start();
+
+    }
+
 }
