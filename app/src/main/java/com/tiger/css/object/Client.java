@@ -1,12 +1,13 @@
 package com.tiger.css.object;
 
-public class Patron {
+public class Client {
     private String url, username, name, phone, email, info, status, request, address, location;
 
-    public Patron() {this.username = "patron1";
+    public Client() {
+        this.username = "client1";
     }
 
-    public Patron(String url, String username, String name, String phone, String email, String info, String status) {
+    public Client(String url, String username, String name, String phone, String email, String info, String status) {
         this.url = url;
         this.username = username;
         this.name = name;

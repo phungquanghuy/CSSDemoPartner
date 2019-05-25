@@ -5,11 +5,9 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -18,7 +16,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 import com.tiger.css.object.Partner;
-import com.tiger.css.object.Patron;
 
 public class FirstActivity extends AppCompatActivity {
 
@@ -68,12 +65,12 @@ public class FirstActivity extends AppCompatActivity {
         if(mPartner.getStatus().equals("offline")){
             active.setBackgroundResource(R.drawable.active_btn);
             active.setTextColor(0xFFFFFFFF);
-            active.setText("Active");
+            active.setText("Bật");
         }
         else{
             active.setBackgroundResource(R.drawable.offline_btn);
             active.setTextColor(0xFF000000);
-            active.setText("Offline");
+            active.setText("Tắt");
         }
     }
 

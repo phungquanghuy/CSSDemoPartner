@@ -17,19 +17,19 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
-import com.tiger.css.object.Patron;
+import com.tiger.css.object.Client;
 import com.tiger.css.object.Partner;
 
 public class TwoActivity extends AppCompatActivity {
 
-    private Patron mPatron = new Patron();
+    private Client mClient = new Client();
     private Partner mPartner = new Partner();
-    private ImageView patronAvt,partnerAvt;
-    private TextView patronInfo, title, request;
+    private ImageView clientAvt,partnerAvt;
+    private TextView clientInfo, title, request;
     private Button acceptBtn, cancelBtn;
 
-    private DatabaseReference partnerDb, patronDb;
-    private FirebaseDatabase partnerFb, patronFb;
+    private DatabaseReference partnerDb, clientDb;
+    private FirebaseDatabase partnerFb, clientFb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,9 +40,9 @@ public class TwoActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowCustomEnabled(true);
         getSupportActionBar().setCustomView(R.layout.custom_actionbar);
 
-        patronAvt = (ImageView) findViewById(R.id.patronAvt);
+        clientAvt = (ImageView) findViewById(R.id.clientAvt);
         partnerAvt = (ImageView) findViewById(R.id.avatar);
-        patronInfo = (TextView) findViewById(R.id.patronInfo);
+        clientInfo = (TextView) findViewById(R.id.clientInfo);
         title = (TextView) findViewById(R.id.title);
         request = (TextView) findViewById(R.id.request);
         acceptBtn = (Button) findViewById(R.id.acceptBtn);
@@ -50,8 +50,8 @@ public class TwoActivity extends AppCompatActivity {
 
         partnerFb = FirebaseDatabase.getInstance();
         partnerDb = partnerFb.getReference("Partner");
-        patronFb = FirebaseDatabase.getInstance();
-        patronDb = patronFb.getReference("Patron");
+        clientFb = FirebaseDatabase.getInstance();
+        clientDb = clientFb.getReference("Client");
 
         getInfo();
 
@@ -84,16 +84,16 @@ public class TwoActivity extends AppCompatActivity {
                     finish();
                 }
                 else {
-                    patronDb.child(mPartner.getStatus()).addValueEventListener(new ValueEventListener() {
+                    clientDb.child(mPartner.getStatus()).addValueEventListener(new ValueEventListener() {
                         @SuppressLint("SetTextI18n")
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            mPatron = dataSnapshot.getValue(Patron.class);
-                            Picasso.get().load(mPatron.getUrl()).into(patronAvt);
-                            patronInfo.setText(mPatron.getName()+"\n"
-                                    +mPatron.getInfo());
-                            title.setText("Mã đơn hàng: CSS-"+mPatron.getUsername());
-                            request.setText("Yêu cầu hỗ trợ: "+mPatron.getRequest());
+                            mClient = dataSnapshot.getValue(Client.class);
+                            Picasso.get().load(mClient.getUrl()).into(clientAvt);
+                            clientInfo.setText(mClient.getName()+"\n"
+                                    + mClient.getInfo());
+                            title.setText("Mã đơn hàng: CSS-"+ mClient.getUsername());
+                            request.setText("Yêu cầu hỗ trợ: "+ mClient.getRequest());
                         }
 
                         @Override

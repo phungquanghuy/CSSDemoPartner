@@ -8,7 +8,7 @@
     tools:context=".TwoActivity">
 
     <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/patronAvt"
+        android:id="@+id/clientAvt"
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:layout_gravity="center"
@@ -50,7 +50,7 @@
         app:layout_constraintStart_toStartOf="@+id/acceptBtn" />
 
     <TextView
-        android:id="@+id/patronInfo"
+        android:id="@+id/clientInfo"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -60,8 +60,8 @@
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/patronAvt"
-        app:layout_constraintTop_toTopOf="@+id/patronAvt" />
+        app:layout_constraintStart_toEndOf="@+id/clientAvt"
+        app:layout_constraintTop_toTopOf="@+id/clientAvt" />
 
     <TextView
         android:id="@+id/request"
@@ -70,7 +70,7 @@
         android:layout_marginTop="8dp"
         android:textColor="#000000"
         android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="@+id/patronInfo"
-        app:layout_constraintStart_toStartOf="@+id/patronInfo"
-        app:layout_constraintTop_toBottomOf="@+id/patronInfo" />
+        app:layout_constraintEnd_toEndOf="@+id/clientInfo"
+        app:layout_constraintStart_toStartOf="@+id/clientInfo"
+        app:layout_constraintTop_toBottomOf="@+id/clientInfo" />
 </android.support.constraint.ConstraintLayout>
