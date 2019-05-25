@@ -1,5 +1,6 @@
 package com.tiger.css;
 
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -51,21 +52,30 @@ public class TwoActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 mPartner = dataSnapshot.getValue(Partner.class);
+                if(mPartner.getStatus().equals("offline")
+                        || mPartner.getStatus().equals("actived")
+                        || mPartner.getStatus().equals("busy")
+                ){
+                    Intent intent = new Intent(TwoActivity.this,FirstActivity.class);
+                    TwoActivity.this.startActivity(intent);
+                    finish();
+                }
+                else {
+                    patronDb.child(mPartner.getStatus()).addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            mPatron = dataSnapshot.getValue(Patron.class);
+                            Picasso.get().load(mPatron.getUrl()).into(patronAvt);
+                            patronInfo.setText(mPatron.getName()+"\n"
+                                    +mPatron.getPhone());
+                        }
 
-                patronDb.child(mPartner.getStatus()).addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        mPatron = dataSnapshot.getValue(Patron.class);
-                        Picasso.get().load(mPatron.getUrl()).into(patronAvt);
-                        patronInfo.setText(mPatron.getName()+"\n"
-                        +mPatron.getPhone());
-                    }
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
+                        }
+                    });
+                }
             }
 
             @Override
