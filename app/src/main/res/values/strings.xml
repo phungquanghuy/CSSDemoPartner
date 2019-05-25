@@ -4,4 +4,6 @@
     <string name="email">Nhập email</string>
     <string name="action_save">Lưu</string>
     <string name="active">Active</string>
+    <string name="accept">Nhận</string>
+    <string name="cancel">Hủy</string>
 </resources>

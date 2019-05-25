@@ -1,5 +1,6 @@
 package com.tiger.css;
 
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -14,13 +15,14 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
+import com.tiger.css.object.Partner;
 import com.tiger.css.object.Patron;
-import com.tiger.css.object.SupportUser;
 
 public class FirstActivity extends AppCompatActivity {
 
     private ImageView avatar;
-    private SupportUser mSupportUser = new SupportUser();
+    private Partner mPartner = new Partner();
+    private Patron mPatron = new Patron();
     private Button active;
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mDatabaseReference;
@@ -35,7 +37,7 @@ public class FirstActivity extends AppCompatActivity {
         getSupportActionBar().setCustomView(R.layout.custom_actionbar);
 
         avatar = (ImageView) findViewById(R.id.avatar);
-        Picasso.get().load(mSupportUser.getUrl()).into(avatar);
+        Picasso.get().load(mPartner.getUrl()).into(avatar);
         active = (Button) findViewById(R.id.active);
 
         mFirebaseDatabase = FirebaseDatabase.getInstance();
@@ -51,18 +53,18 @@ public class FirstActivity extends AppCompatActivity {
     }
 
     protected void toggleBtn(){
-        if(!mSupportUser.getStatus().equals("offline")){
-            mSupportUser.setStatus("offline");
-            mDatabaseReference.child(mSupportUser.getUsername()).child("status").setValue("offline");
+        if(!mPartner.getStatus().equals("offline")){
+            mPartner.setStatus("offline");
+            mDatabaseReference.child(mPartner.getUsername()).child("status").setValue("offline");
         }
         else{
-            mSupportUser.setStatus("actived");
-            mDatabaseReference.child(mSupportUser.getUsername()).child("status").setValue("actived");
+            mPartner.setStatus("actived");
+            mDatabaseReference.child(mPartner.getUsername()).child("status").setValue("actived");
         }
     }
 
     private void statusBtn(){
-        if(mSupportUser.getStatus().equals("offline")){
+        if(mPartner.getStatus().equals("offline")){
             active.setBackgroundResource(R.drawable.active_btn);
             active.setTextColor(0xFFFFFFFF);
             active.setText("Active");
@@ -70,16 +72,24 @@ public class FirstActivity extends AppCompatActivity {
         else{
             active.setBackgroundResource(R.drawable.offline_btn);
             active.setTextColor(0xFF000000);
-            active.setText("Offlne");
+            active.setText("Offline");
         }
     }
 
     private void statusChange(){
-        mDatabaseReference.child(mSupportUser.getUsername()).addValueEventListener(new ValueEventListener() {
+        mDatabaseReference.child(mPartner.getUsername()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                mSupportUser = dataSnapshot.getValue(SupportUser.class);
+                mPartner = dataSnapshot.getValue(Partner.class);
                 statusBtn();
+                if(!mPartner.getStatus().equals("offline")
+                    && !mPartner.getStatus().equals("actived")
+                    && !mPartner.getStatus().equals("busy")
+                ){
+                    Intent intent = new Intent(FirstActivity.this,TwoActivity.class);
+                    FirstActivity.this.startActivity(intent);
+                    finish();
+                }
             }
 
             @Override
