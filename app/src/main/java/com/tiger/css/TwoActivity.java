@@ -92,7 +92,7 @@ public class TwoActivity extends AppCompatActivity {
                             Picasso.get().load(mClient.getUrl()).into(clientAvt);
                             clientInfo.setText(mClient.getName()+"\n"
                                     + mClient.getInfo());
-                            title.setText("Mã đơn hàng: CSS-"+ mClient.getUsername());
+                            title.setText("Mã khách hàng: CSS-"+ mClient.getUsername());
                             request.setText("Yêu cầu hỗ trợ: "+ mClient.getRequest());
                         }
 
