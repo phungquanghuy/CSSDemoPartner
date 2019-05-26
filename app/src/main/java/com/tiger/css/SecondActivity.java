@@ -149,6 +149,7 @@ public class SecondActivity extends AppCompatActivity {
             public void onFinish() {
                 countdown.setText(0+"");
                 partnerDb.child(mPartner.getUsername()).child("status").setValue("actived");
+                clientDb.child(mPartner.getClientUsn()).child("status").setValue("waiting"+mPartner.getUsername());
             }
         }.start();
 

@@ -173,24 +173,24 @@ public class FirstActivity extends AppCompatActivity {
                     FirstActivity.this.startActivity(intent);
                     finish();
                 }
-                if(mPartner.getStatus().equals("actived")){
-                    clientDb.child(mClient.getUsername()).addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            mClient = dataSnapshot.getValue(Client.class);
-                            if(mClient.getStatus().contains("waiting") && !mClient.getStatus().contains(mPartner.getUsername())){
-                                clientDb.child(mClient.getUsername()).child("status").setValue("busy");
-                                partnerDb.child(mPartner.getUsername()).child("status").setValue("busy");
-                                partnerDb.child(mPartner.getUsername()).child("clientUsn").setValue(mClient.getUsername());
-                            }
+                clientDb.child(mClient.getUsername()).addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        mClient = dataSnapshot.getValue(Client.class);
+                        if(mClient.getStatus().contains("waiting")
+                                && mPartner.getStatus().equals("actived")
+                                && !mClient.getStatus().contains(mPartner.getUsername())){
+                            clientDb.child(mClient.getUsername()).child("status").setValue("busy");
+                            partnerDb.child(mPartner.getUsername()).child("status").setValue("busy");
+                            partnerDb.child(mPartner.getUsername()).child("clientUsn").setValue(mClient.getUsername());
                         }
+                    }
 
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                        }
-                    });
-                }
+                    }
+                });
             }
 
             @Override
