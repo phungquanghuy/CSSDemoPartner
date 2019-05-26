@@ -1,8 +1,18 @@
 package com.tiger.css;
 
+import android.Manifest;
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -11,7 +21,18 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -25,6 +46,12 @@ public class FirstActivity extends AppCompatActivity {
     private ImageView avatar;
     private Partner mPartner = new Partner();
     private Button active;
+
+    //Khai báo cho Map
+    private GoogleMap myMap;
+    private ProgressDialog myProgress;
+    private SupportMapFragment mapFragment;
+
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mDatabaseReference;
 
@@ -36,6 +63,25 @@ public class FirstActivity extends AppCompatActivity {
         this.getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getSupportActionBar().setDisplayShowCustomEnabled(true);
         getSupportActionBar().setCustomView(R.layout.custom_actionbar);
+
+        // Tạo Progress Bar
+        myProgress = new ProgressDialog(this);
+        myProgress.setTitle("Bản đồ đang tải ...");
+        myProgress.setMessage("Vui lòng chờ...");
+        myProgress.setCancelable(true);
+
+        // Hiển thị Progress Bar
+        myProgress.show();
+
+        mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.firstMap);
+
+        // Sét đặt sự kiện thời điểm GoogleMap đã sẵn sàng.
+        mapFragment.getMapAsync(new OnMapReadyCallback() {
+            @Override
+            public void onMapReady(GoogleMap googleMap) {
+                onMyMapReady(googleMap);
+            }
+        });
 
         avatar = (ImageView) findViewById(R.id.avatar);
         active = (Button) findViewById(R.id.active);
@@ -53,13 +99,41 @@ public class FirstActivity extends AppCompatActivity {
         statusChange();
     }
 
+    private void onMyMapReady(GoogleMap googleMap) {
+        // Lấy đối tượng Google Map ra:
+        myMap = googleMap;
+
+        // Thiết lập sự kiện đã tải Map thành công
+        myMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
+            @Override
+            public void onMapLoaded() {
+                // Đã tải thành công thì tắt Dialog Progress đi
+                myProgress.dismiss();
+
+                // Hiển thị vị trí người dùng.
+//                askPermissionsAndShowMyLocation();
+            }
+        });
+        myMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        myMap.getUiSettings().setZoomControlsEnabled(false);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        myMap.setMyLocationEnabled(true);
+    }
+
     protected void toggleBtn(){
         if(mPartner.getStatus().equals("offline")){
-            mPartner.setStatus("actived");
             mDatabaseReference.child(mPartner.getUsername()).child("status").setValue("actived");
         }
         else{
-            mPartner.setStatus("offline");
             mDatabaseReference.child(mPartner.getUsername()).child("status").setValue("offline");
         }
     }

@@ -1,9 +1,13 @@
 package com.tiger.css;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -12,6 +16,9 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -29,6 +36,11 @@ public class ThirdActivity extends AppCompatActivity {
     private ImageView partnerAvt, clientAvt;
     private TextView clientName, address, price;
     private Boolean check = true;
+
+    //Khai báo cho Map
+    private GoogleMap myMap;
+    private ProgressDialog myProgress;
+    private SupportMapFragment mapFragment;
 
     private DatabaseReference clientDb = FirebaseDatabase.getInstance().getReference("Client");
     private DatabaseReference partnerDb = FirebaseDatabase.getInstance().getReference("Partner");
@@ -50,6 +62,25 @@ public class ThirdActivity extends AppCompatActivity {
         address = findViewById(R.id.address);
         price = findViewById(R.id.price);
 
+        // Tạo Progress Bar
+        myProgress = new ProgressDialog(this);
+        myProgress.setTitle("Bản đồ đang tải ...");
+        myProgress.setMessage("Vui lòng chờ...");
+        myProgress.setCancelable(true);
+
+        // Hiển thị Progress Bar
+        myProgress.show();
+
+        mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.thirdMap);
+
+        // Sét đặt sự kiện thời điểm GoogleMap đã sẵn sàng.
+        mapFragment.getMapAsync(new OnMapReadyCallback() {
+            @Override
+            public void onMapReady(GoogleMap googleMap) {
+                onMyMapReady(googleMap);
+            }
+        });
+
         getInfo();
         finish.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -58,6 +89,37 @@ public class ThirdActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void onMyMapReady(GoogleMap googleMap) {
+        // Lấy đối tượng Google Map ra:
+        myMap = googleMap;
+
+        // Thiết lập sự kiện đã tải Map thành công
+        myMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
+            @Override
+            public void onMapLoaded() {
+                // Đã tải thành công thì tắt Dialog Progress đi
+                myProgress.dismiss();
+
+                // Hiển thị vị trí người dùng.
+//                askPermissionsAndShowMyLocation();
+            }
+        });
+        myMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        myMap.getUiSettings().setZoomControlsEnabled(false);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        myMap.setMyLocationEnabled(true);
+    }
+
     protected void getInfo(){
         partnerDb.child(mPartner.getUsername()).addValueEventListener(new ValueEventListener() {
             @Override

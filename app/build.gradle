@@ -31,7 +31,9 @@ dependencies {
     implementation 'com.google.firebase:firebase-core:16.0.9'
     implementation 'com.android.support:design:28.0.0'
     implementation 'com.google.firebase:firebase-database:17.0.0'
+
     implementation 'com.google.android.gms:play-services-maps:16.1.0'
+    implementation 'com.google.android.gms:play-services-location:16.0.0'
     implementation 'com.squareup.picasso:picasso:2.71828'
 
     implementation 'com.mikhaellopez:circularprogressbar:1.0.0'

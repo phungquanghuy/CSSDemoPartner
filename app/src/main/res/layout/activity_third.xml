@@ -6,13 +6,15 @@
     android:layout_height="match_parent"
     tools:context=".ThirdActivity">
 
-    <com.google.android.gms.maps.MapView
-        android:id="@+id/mapView2"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        tools:layout_editor_absoluteX="142dp"
-        tools:layout_editor_absoluteY="238dp"
-        tools:ignore="MissingConstraints" />
+    <fragment
+        android:id="@+id/thirdMap"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/finish"
@@ -26,7 +28,7 @@
         android:text="@string/finish"
         android:textColor="#FFFFFF"
         android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="@+id/mapView2"
+        app:layout_constraintBottom_toBottomOf="@+id/thirdMap"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -51,7 +53,7 @@
         app:layout_constraintStart_toStartOf="parent"
         android:paddingBottom="16dp"
         android:background="#68FFFFFF"
-        app:layout_constraintTop_toTopOf="@+id/mapView2">
+        app:layout_constraintTop_toTopOf="@+id/thirdMap">
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/clientAvt"
