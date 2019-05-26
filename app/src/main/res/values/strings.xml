@@ -6,4 +6,6 @@
     <string name="active">Bật</string>
     <string name="accept">Nhận</string>
     <string name="cancel">Hủy</string>
+    <string name="call">Gọi điện</string>
+    <string name="finish">Kết thúc</string>
 </resources>

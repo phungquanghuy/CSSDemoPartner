@@ -1,20 +1,26 @@
 package com.tiger.css.object;
 
 public class Partner {
-    private String url, username, name, phone, email, info, status;
+    private String url, username, name, phone, email, info, status, clientUsn, location;
 
     public Partner() {
         this.username = "supportPartner1";
     }
 
-    public Partner(String url, String username, String name, String phone, String email, String info, String status) {
-        this.url = url;
-        this.username = username;
-        this.name = name;
-        this.phone = phone;
-        this.email = email;
-        this.info = info;
-        this.status = status;
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public String getClientUsn() {
+        return clientUsn;
+    }
+
+    public void setClientUsn(String clientUsn) {
+        this.clientUsn = clientUsn;
     }
 
     public String getUrl() {

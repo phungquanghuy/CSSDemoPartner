@@ -2,6 +2,9 @@ package com.tiger.css;
 
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -81,11 +84,13 @@ public class FirstActivity extends AppCompatActivity {
                 mPartner = dataSnapshot.getValue(Partner.class);
                 statusBtn();
                 Picasso.get().load(mPartner.getUrl()).into(avatar);
-                if(!mPartner.getStatus().equals("offline")
-                    && !mPartner.getStatus().equals("actived")
-                    && !mPartner.getStatus().equals("busy")
-                ){
+                if(mPartner.getStatus().equals("busy")){
                     Intent intent = new Intent(FirstActivity.this, SecondActivity.class);
+                    FirstActivity.this.startActivity(intent);
+                    finish();
+                }
+                if(mPartner.getStatus().equals("paired")){
+                    Intent intent = new Intent(FirstActivity.this, ThirdActivity.class);
                     FirstActivity.this.startActivity(intent);
                     finish();
                 }
@@ -99,10 +104,4 @@ public class FirstActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    public void onBackPressed() {
-        moveTaskToBack(true);
-        android.os.Process.killProcess(android.os.Process.myPid());
-        System.exit(1);
-    }
 }

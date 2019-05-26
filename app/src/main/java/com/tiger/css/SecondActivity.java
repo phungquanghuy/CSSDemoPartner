@@ -73,13 +73,15 @@ public class SecondActivity extends AppCompatActivity {
         cancelBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mCountDownTimer.cancel();
                 partnerDb.child(mPartner.getUsername()).child("status").setValue("actived");
             }
         });
         acceptBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                partnerDb.child(mPartner.getUsername()).child("status").setValue("busy");
+                mCountDownTimer.cancel();
+                partnerDb.child(mPartner.getUsername()).child("status").setValue("paired");
             }
         });
     }
@@ -92,7 +94,6 @@ public class SecondActivity extends AppCompatActivity {
                 Picasso.get().load(mPartner.getUrl()).into(partnerAvt);
                 if(mPartner.getStatus().equals("offline")
                         || mPartner.getStatus().equals("actived")
-                        || mPartner.getStatus().equals("busy")
                 ){
                     if(check){
                         check = false;
@@ -101,26 +102,30 @@ public class SecondActivity extends AppCompatActivity {
                         finish();
                     }
                 }
-                else {
-                    clientDb.child(mPartner.getStatus()).addValueEventListener(new ValueEventListener() {
-                        @SuppressLint("SetTextI18n")
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            mClient = dataSnapshot.getValue(Client.class);
-                            Picasso.get().load(mClient.getUrl()).into(clientAvt);
-                            clientInfo.setText(mClient.getName()+"\n"
-                                    + mClient.getInfo());
-                            title.setText("Mã khách hàng: CSS-"+ mClient.getUsername());
-                            address.setText("Địa chỉ: "+mClient.getAddress());
-                            request.setText("Yêu cầu hỗ trợ: "+ mClient.getRequest());
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                        }
-                    });
+                if(mPartner.getStatus().equals("paired")){
+                    clientDb.child(mPartner.getClientUsn()).child("status").setValue(mPartner.getUsername());
+                    Intent intent = new Intent(SecondActivity.this,ThirdActivity.class);
+                    SecondActivity.this.startActivity(intent);
+                    finish();
                 }
+                clientDb.child(mPartner.getClientUsn()).addValueEventListener(new ValueEventListener() {
+                    @SuppressLint("SetTextI18n")
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        mClient = dataSnapshot.getValue(Client.class);
+                        Picasso.get().load(mClient.getUrl()).into(clientAvt);
+                        clientInfo.setText(mClient.getName()+"\n"
+                                + mClient.getInfo());
+                        title.setText("Mã khách hàng: CSS-"+ mClient.getUsername());
+                        address.setText("Địa chỉ: "+mClient.getAddress());
+                        request.setText("Yêu cầu hỗ trợ: "+ mClient.getRequest());
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
             }
 
             @Override

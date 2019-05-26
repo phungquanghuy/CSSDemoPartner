@@ -1,20 +1,18 @@
 package com.tiger.css.object;
 
 public class Client {
-    private String url, username, name, phone, email, info, status, request, address, location;
+    private String url, username, name, phone, email, info, status, request, address, location, price;
 
     public Client() {
         this.username = "client1";
     }
 
-    public Client(String url, String username, String name, String phone, String email, String info, String status) {
-        this.url = url;
-        this.username = username;
-        this.name = name;
-        this.phone = phone;
-        this.email = email;
-        this.info = info;
-        this.status = status;
+    public String getPrice() {
+        return price;
+    }
+
+    public void setPrice(String price) {
+        this.price = price;
     }
 
     public String getUrl() {
