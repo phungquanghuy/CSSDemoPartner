@@ -39,12 +39,16 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
+import com.tiger.css.object.Client;
 import com.tiger.css.object.Partner;
+
+import org.json.JSONArray;
 
 public class FirstActivity extends AppCompatActivity {
 
     private ImageView avatar;
     private Partner mPartner = new Partner();
+    private Client mClient = new Client();
     private Button active;
 
     //Khai báo cho Map
@@ -53,7 +57,8 @@ public class FirstActivity extends AppCompatActivity {
     private SupportMapFragment mapFragment;
 
     private FirebaseDatabase mFirebaseDatabase;
-    private DatabaseReference mDatabaseReference;
+    private DatabaseReference partnerDb;
+    private DatabaseReference clientDb = FirebaseDatabase.getInstance().getReference("Client");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,7 +92,7 @@ public class FirstActivity extends AppCompatActivity {
         active = (Button) findViewById(R.id.active);
 
         mFirebaseDatabase = FirebaseDatabase.getInstance();
-        mDatabaseReference = mFirebaseDatabase.getReference("Partner");
+        partnerDb = mFirebaseDatabase.getReference("Partner");
 
         active.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -131,10 +136,10 @@ public class FirstActivity extends AppCompatActivity {
 
     protected void toggleBtn(){
         if(mPartner.getStatus().equals("offline")){
-            mDatabaseReference.child(mPartner.getUsername()).child("status").setValue("actived");
+            partnerDb.child(mPartner.getUsername()).child("status").setValue("actived");
         }
         else{
-            mDatabaseReference.child(mPartner.getUsername()).child("status").setValue("offline");
+            partnerDb.child(mPartner.getUsername()).child("status").setValue("offline");
         }
     }
 
@@ -152,7 +157,7 @@ public class FirstActivity extends AppCompatActivity {
     }
 
     private void statusChange(){
-        mDatabaseReference.child(mPartner.getUsername()).addValueEventListener(new ValueEventListener() {
+        partnerDb.child(mPartner.getUsername()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 mPartner = dataSnapshot.getValue(Partner.class);
@@ -168,7 +173,24 @@ public class FirstActivity extends AppCompatActivity {
                     FirstActivity.this.startActivity(intent);
                     finish();
                 }
+                if(mPartner.getStatus().equals("actived")){
+                    clientDb.child(mClient.getUsername()).addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            mClient = dataSnapshot.getValue(Client.class);
+                            if(mClient.getStatus().contains("waiting") && !mClient.getStatus().contains(mPartner.getUsername())){
+                                clientDb.child(mClient.getUsername()).child("status").setValue("busy");
+                                partnerDb.child(mPartner.getUsername()).child("status").setValue("busy");
+                                partnerDb.child(mPartner.getUsername()).child("clientUsn").setValue(mClient.getUsername());
+                            }
+                        }
 
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+                }
             }
 
             @Override

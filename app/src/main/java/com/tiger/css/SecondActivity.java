@@ -75,6 +75,7 @@ public class SecondActivity extends AppCompatActivity {
             public void onClick(View v) {
                 mCountDownTimer.cancel();
                 partnerDb.child(mPartner.getUsername()).child("status").setValue("actived");
+                clientDb.child(mPartner.getClientUsn()).child("status").setValue("waiting"+mPartner.getUsername());
             }
         });
         acceptBtn.setOnClickListener(new View.OnClickListener() {
