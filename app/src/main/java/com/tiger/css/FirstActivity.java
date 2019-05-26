@@ -4,11 +4,14 @@ import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Address;
 import android.location.Criteria;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
@@ -18,17 +21,20 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -44,7 +50,14 @@ import com.tiger.css.object.Partner;
 
 import org.json.JSONArray;
 
-public class FirstActivity extends AppCompatActivity {
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
+import static android.provider.Telephony.TextBasedSmsColumns.ADDRESS;
+
+public class FirstActivity extends AppCompatActivity implements LocationListener {
 
     private ImageView avatar;
     private Partner mPartner = new Partner();
@@ -55,6 +68,9 @@ public class FirstActivity extends AppCompatActivity {
     private GoogleMap myMap;
     private ProgressDialog myProgress;
     private SupportMapFragment mapFragment;
+    private LocationManager locationManager;
+
+    private int REQUEST_GPS = 100;
 
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference partnerDb;
@@ -76,15 +92,19 @@ public class FirstActivity extends AppCompatActivity {
         myProgress.setCancelable(true);
 
         // Hiển thị Progress Bar
-        myProgress.show();
+//        myProgress.show();
 
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.firstMap);
 
-        // Sét đặt sự kiện thời điểm GoogleMap đã sẵn sàng.
+        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        checkGps();
+
+
         mapFragment.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(GoogleMap googleMap) {
-                onMyMapReady(googleMap);
+                if (checkPermission())
+                    onMyMapReady(googleMap);
             }
         });
 
@@ -100,8 +120,34 @@ public class FirstActivity extends AppCompatActivity {
                 toggleBtn();
             }
         });
-
         statusChange();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode){
+            case 100:
+                if (grantResults.length>0 && grantResults[0]==PackageManager.PERMISSION_GRANTED){
+                    checkGps();
+                }
+                return;
+        }
+    }
+
+    private boolean checkPermission(){
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{
+                    Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION
+            }, REQUEST_GPS);
+            return false;
+        }
+        return true;
+    }
+
+    private void checkGps(){
+        if (checkPermission()){
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,3000,0,this);
+        }
     }
 
     private void onMyMapReady(GoogleMap googleMap) {
@@ -115,23 +161,34 @@ public class FirstActivity extends AppCompatActivity {
                 // Đã tải thành công thì tắt Dialog Progress đi
                 myProgress.dismiss();
 
-                // Hiển thị vị trí người dùng.
-//                askPermissionsAndShowMyLocation();
+                //Marker
+//                LatLng TTTH_KHTN = new LatLng(21.035478, 105.787772);
+//                MarkerOptions option=new MarkerOptions();
+//                option.position(TTTH_KHTN);
+//                option.title("Trung tâm tin học ĐH KHTN").snippet("This is cool");
+//                option.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+//                option.alpha(0.8f);
+//                Marker maker = myMap.addMarker(option);
+////                maker.showInfoWindow();
+//                LatLng latLng = new LatLng(21.038126,105.783345);
+//                myMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation(),17));
             }
         });
         myMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         myMap.getUiSettings().setZoomControlsEnabled(false);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
+        if (checkPermission()){
+            myMap.setMyLocationEnabled(true);
         }
-        myMap.setMyLocationEnabled(true);
+    }
+
+    private String locationName(LatLng latLng) throws IOException {
+        Geocoder geocode = new Geocoder(FirstActivity.this, Locale.getDefault());
+        List<Address> listAddress = geocode.getFromLocation(latLng.latitude, latLng.longitude, 100);
+        Address address = listAddress.get(0);
+
+        // Log test hiển thị tên vị trí người dùng
+//        Log.d(ADDRESS, currentAddress.toString())
+        return address.getAddressLine(0).toString();
     }
 
     protected void toggleBtn(){
@@ -163,6 +220,24 @@ public class FirstActivity extends AppCompatActivity {
                 mPartner = dataSnapshot.getValue(Partner.class);
                 statusBtn();
                 Picasso.get().load(mPartner.getUrl()).into(avatar);
+
+                // Sét đặt sự kiện thời điểm GoogleMap đã sẵn sàng.
+                LatLng latLng = new LatLng(Double.valueOf(mPartner.getLat()),Double.valueOf(mPartner.getLng()));
+                if (checkPermission()){
+                    myMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,17));
+                    MarkerOptions option=new MarkerOptions();
+                    option.position(latLng);
+                    try {
+                        option.title(locationName(latLng)).snippet("This is cool");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    option.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+                    option.alpha(0.8f);
+                    Marker maker = myMap.addMarker(option);
+                    maker.showInfoWindow();
+                }
+
                 if(mPartner.getStatus().equals("busy")){
                     Intent intent = new Intent(FirstActivity.this, SecondActivity.class);
                     FirstActivity.this.startActivity(intent);
@@ -200,4 +275,25 @@ public class FirstActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onLocationChanged(Location location) {
+        checkGps();
+        Log.e("LatChange",location.getLatitude()+"");
+        partnerDb.child(mPartner.getUsername()).child("lat").setValue(location.getLatitude()+"");
+        partnerDb.child(mPartner.getUsername()).child("lng").setValue(location.getLongitude()+"");
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+    }
 }
