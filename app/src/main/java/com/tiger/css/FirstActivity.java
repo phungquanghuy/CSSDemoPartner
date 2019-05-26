@@ -97,7 +97,7 @@ public class FirstActivity extends AppCompatActivity implements LocationListener
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.firstMap);
 
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-        checkGps();
+        locateGPS();
 
 
         mapFragment.getMapAsync(new OnMapReadyCallback() {
@@ -128,7 +128,7 @@ public class FirstActivity extends AppCompatActivity implements LocationListener
         switch (requestCode){
             case 100:
                 if (grantResults.length>0 && grantResults[0]==PackageManager.PERMISSION_GRANTED){
-                    checkGps();
+                    locateGPS();
                 }
                 return;
         }
@@ -144,9 +144,13 @@ public class FirstActivity extends AppCompatActivity implements LocationListener
         return true;
     }
 
-    private void checkGps(){
+    private void locateGPS(){
         if (checkPermission()){
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,3000,0,this);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,3000,0,this);
+            Location localGpsLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            if(localGpsLocation == null){
+                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,3000,0,this);
+            }
         }
     }
 
@@ -232,8 +236,6 @@ public class FirstActivity extends AppCompatActivity implements LocationListener
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    option.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-                    option.alpha(0.8f);
                     Marker maker = myMap.addMarker(option);
                     maker.showInfoWindow();
                 }
@@ -277,7 +279,7 @@ public class FirstActivity extends AppCompatActivity implements LocationListener
 
     @Override
     public void onLocationChanged(Location location) {
-        checkGps();
+        locateGPS();
         Log.e("LatChange",location.getLatitude()+"");
         partnerDb.child(mPartner.getUsername()).child("lat").setValue(location.getLatitude()+"");
         partnerDb.child(mPartner.getUsername()).child("lng").setValue(location.getLongitude()+"");
