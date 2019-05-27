@@ -277,7 +277,6 @@ public class FirstActivity extends AppCompatActivity implements LocationListener
     @Override
     public void onLocationChanged(Location location) {
         locateGPS();
-        Log.e("LatChange",location.getLatitude()+"");
         if (check){
             partnerDb.child(mPartner.getUsername()).child("lat").setValue(location.getLatitude()+"");
             partnerDb.child(mPartner.getUsername()).child("lng").setValue(location.getLongitude()+"");
