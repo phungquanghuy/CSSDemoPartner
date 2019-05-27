@@ -42,18 +42,17 @@ dependencies {
 
     implementation 'com.mikhaellopez:circularprogressbar:1.0.0'
 
-    implementation 'org.slf4j:slf4j-nop:1.7.25'
-
     implementation 'com.akexorcist:googledirectionlibrary:1.1.1'
     implementation 'org.parceler:parceler-api:1.1.12'
     annotationProcessor 'org.parceler:parceler:1.1.12'
 
     // Retrofit
-    implementation 'com.squareup.retrofit2:retrofit:2.1.0'
+    implementation 'com.squareup.retrofit2:retrofit:2.5.0'
 
 // JSON Parsing
-    implementation 'com.google.code.gson:gson:2.6.1'
-    implementation 'com.squareup.retrofit2:converter-gson:2.1.0'
+    implementation 'com.google.code.gson:gson:2.8.5'
+    implementation 'com.squareup.retrofit2:converter-gson:2.5.0'\
+
 }
 
 apply plugin: 'com.google.gms.google-services'
