@@ -84,7 +84,6 @@ public class SecondActivity extends AppCompatActivity {
         cancelBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mCountDownTimer.cancel();
                 partnerDb.child(mPartner.getUsername()).child("status").setValue("actived");
                 clientDb.child(mPartner.getClientUsn()).child("status").setValue("waiting"+mPartner.getUsername());
             }
@@ -92,7 +91,6 @@ public class SecondActivity extends AppCompatActivity {
         acceptBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mCountDownTimer.cancel();
                 partnerDb.child(mPartner.getUsername()).child("status").setValue("paired");
             }
         });
@@ -117,19 +115,19 @@ public class SecondActivity extends AppCompatActivity {
                 ){
                     if(check){
                         check = false;
+                        mCountDownTimer.cancel();
                         Intent intent = new Intent(SecondActivity.this,FirstActivity.class);
                         SecondActivity.this.startActivity(intent);
                         finish();
                     }
                 }
-                if(mPartner.getStatus().equals("paired")){
-                    if(check){
-                        check = false;
-                        clientDb.child(mPartner.getClientUsn()).child("status").setValue(mPartner.getUsername());
-                        Intent intent = new Intent(SecondActivity.this,ThirdActivity.class);
-                        SecondActivity.this.startActivity(intent);
-                        finish();
-                    }
+                if(mPartner.getStatus().equals("paired") && check){
+                    check = false;
+                    mCountDownTimer.cancel();
+                    clientDb.child(mPartner.getClientUsn()).child("status").setValue(mPartner.getUsername());
+                    Intent intent = new Intent(SecondActivity.this,ThirdActivity.class);
+                    SecondActivity.this.startActivity(intent);
+                    finish();
                 }
                 clientDb.child(mPartner.getClientUsn()).addValueEventListener(new ValueEventListener() {
                     @SuppressLint("SetTextI18n")
@@ -149,12 +147,13 @@ public class SecondActivity extends AppCompatActivity {
                         double dis = Math.round(SphericalUtil.computeDistanceBetween(from, to)/100);
                         distance.setText(dis/10+"km");
 
-                        try {
-                            clientDb.child(mPartner.getClientUsn()).child("address").setValue(locationName(to));
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                        if(check){
+                            try {
+                                clientDb.child(mPartner.getClientUsn()).child("address").setValue(locationName(to));
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
                         }
-
 
                     }
 
