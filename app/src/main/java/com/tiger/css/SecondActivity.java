@@ -138,6 +138,9 @@ public class SecondActivity extends AppCompatActivity {
                         LatLng from = new LatLng(Double.valueOf(mPartner.getLat()),Double.valueOf(mPartner.getLng()));
                         double dis = Math.round(SphericalUtil.computeDistanceBetween(from, to)/100);
                         distance.setText(dis/10+"km");
+                        if (mClient.getStatus().equals("available") && check){
+                            partnerDb.child(mPartner.getUsername()).child("status").setValue("actived");
+                        }
                     }
 
                     @Override
