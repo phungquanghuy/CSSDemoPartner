@@ -213,7 +213,8 @@ public class ThirdActivity extends AppCompatActivity implements LocationListener
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         mClient = dataSnapshot.getValue(Client.class);
                         Picasso.get().load(mClient.getUrl()).into(clientAvt);
-                        address.setText("Địa chỉ: "+mClient.getAddress());
+                        address.setText("Địa chỉ: "+mClient.getAddress()
+                                +"\nYêu cầu hỗ trợ: "+mClient.getRequest());
                         clientName.setText(mClient.getName());
                         price.setText("Giá : "+mClient.getPrice());
                         title.setText("Mã khách hàng: CSS-"+ mClient.getUsername());
