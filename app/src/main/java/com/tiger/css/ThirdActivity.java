@@ -226,6 +226,7 @@ public class ThirdActivity extends AppCompatActivity implements LocationListener
                             call.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
+                                    check = false;
                                     Intent intent = new Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", mClient.getPhone(), null));
                                     startActivity(intent);
                                 }
