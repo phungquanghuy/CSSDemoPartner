@@ -34,6 +34,10 @@ dependencies {
 
     implementation 'com.google.android.gms:play-services-maps:16.1.0'
     implementation 'com.google.android.gms:play-services-location:16.0.0'
+    //noinspection GradleDynamicVersion
+    implementation 'com.google.maps.android:android-maps-utils:0.5+'
+    implementation 'com.google.code.gson:gson:2.8.5'
+
     implementation 'com.squareup.picasso:picasso:2.71828'
 
     implementation 'com.mikhaellopez:circularprogressbar:1.0.0'

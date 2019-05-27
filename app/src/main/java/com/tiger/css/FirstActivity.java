@@ -63,13 +63,13 @@ public class FirstActivity extends AppCompatActivity implements LocationListener
     private Partner mPartner = new Partner();
     private Client mClient = new Client();
     private Button active;
+    private Boolean check = true;
 
     //Khai báo cho Map
     private GoogleMap myMap;
     private ProgressDialog myProgress;
     private SupportMapFragment mapFragment;
     private LocationManager locationManager;
-
     private int REQUEST_GPS = 100;
 
     private FirebaseDatabase mFirebaseDatabase;
@@ -103,10 +103,12 @@ public class FirstActivity extends AppCompatActivity implements LocationListener
         mapFragment.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(GoogleMap googleMap) {
-                if (checkPermission())
+                if (checkPermission()){
                     onMyMapReady(googleMap);
+                }
             }
         });
+
 
         avatar = (ImageView) findViewById(R.id.avatar);
         active = (Button) findViewById(R.id.active);
@@ -144,14 +146,17 @@ public class FirstActivity extends AppCompatActivity implements LocationListener
         return true;
     }
 
-    private void locateGPS(){
+    private Location locateGPS(){
+        Location localGpsLocation = null;
         if (checkPermission()){
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,3000,0,this);
-            Location localGpsLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            localGpsLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
             if(localGpsLocation == null){
                 locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,3000,0,this);
+                localGpsLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
             }
         }
+        return localGpsLocation;
     }
 
     private void onMyMapReady(GoogleMap googleMap) {
@@ -164,7 +169,6 @@ public class FirstActivity extends AppCompatActivity implements LocationListener
             public void onMapLoaded() {
                 // Đã tải thành công thì tắt Dialog Progress đi
                 myProgress.dismiss();
-
                 //Marker
 //                LatLng TTTH_KHTN = new LatLng(21.035478, 105.787772);
 //                MarkerOptions option=new MarkerOptions();
@@ -175,9 +179,17 @@ public class FirstActivity extends AppCompatActivity implements LocationListener
 //                Marker maker = myMap.addMarker(option);
 ////                maker.showInfoWindow();
 //                LatLng latLng = new LatLng(21.038126,105.783345);
-//                myMap.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation(),17));
+//                myMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,17));
+
+//                myMap.moveCamera(CameraUpdateFactory.zoomBy(16));
+                // Sét đặt sự kiện thời điểm GoogleMap đã sẵn sàng.
+                LatLng latLng = new LatLng(locateGPS().getLatitude(),locateGPS().getLongitude());
+                if (checkPermission()){
+                    myMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,16));
+                }
             }
         });
+
         myMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         myMap.getUiSettings().setZoomControlsEnabled(false);
         if (checkPermission()){
@@ -190,9 +202,7 @@ public class FirstActivity extends AppCompatActivity implements LocationListener
         List<Address> listAddress = geocode.getFromLocation(latLng.latitude, latLng.longitude, 100);
         Address address = listAddress.get(0);
 
-        // Log test hiển thị tên vị trí người dùng
-//        Log.d(ADDRESS, currentAddress.toString())
-        return address.getAddressLine(0).toString();
+        return address.getAddressLine(0);
     }
 
     protected void toggleBtn(){
@@ -225,27 +235,14 @@ public class FirstActivity extends AppCompatActivity implements LocationListener
                 statusBtn();
                 Picasso.get().load(mPartner.getUrl()).into(avatar);
 
-                // Sét đặt sự kiện thời điểm GoogleMap đã sẵn sàng.
-                LatLng latLng = new LatLng(Double.valueOf(mPartner.getLat()),Double.valueOf(mPartner.getLng()));
-                if (checkPermission()){
-                    myMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,17));
-                    MarkerOptions option=new MarkerOptions();
-                    option.position(latLng);
-                    try {
-                        option.title(locationName(latLng)).snippet("This is cool");
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    Marker maker = myMap.addMarker(option);
-                    maker.showInfoWindow();
-                }
-
-                if(mPartner.getStatus().equals("busy")){
+                if(mPartner.getStatus().equals("busy") && check){
+                    check = false;
                     Intent intent = new Intent(FirstActivity.this, SecondActivity.class);
                     FirstActivity.this.startActivity(intent);
                     finish();
                 }
-                if(mPartner.getStatus().equals("paired")){
+                if(mPartner.getStatus().equals("paired") && check){
+                    check = false;
                     Intent intent = new Intent(FirstActivity.this, ThirdActivity.class);
                     FirstActivity.this.startActivity(intent);
                     finish();
@@ -281,8 +278,10 @@ public class FirstActivity extends AppCompatActivity implements LocationListener
     public void onLocationChanged(Location location) {
         locateGPS();
         Log.e("LatChange",location.getLatitude()+"");
-        partnerDb.child(mPartner.getUsername()).child("lat").setValue(location.getLatitude()+"");
-        partnerDb.child(mPartner.getUsername()).child("lng").setValue(location.getLongitude()+"");
+        if (check){
+            partnerDb.child(mPartner.getUsername()).child("lat").setValue(location.getLatitude()+"");
+            partnerDb.child(mPartner.getUsername()).child("lng").setValue(location.getLongitude()+"");
+        }
     }
 
     @Override
@@ -297,5 +296,7 @@ public class FirstActivity extends AppCompatActivity implements LocationListener
 
     @Override
     public void onProviderDisabled(String provider) {
+        Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+        startActivity(intent);
     }
 }

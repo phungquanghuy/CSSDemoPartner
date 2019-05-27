@@ -67,11 +67,11 @@
         android:id="@+id/address"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
         android:textColor="#000000"
         android:textSize="16sp"
         android:textStyle="bold|italic"
         app:layout_constraintEnd_toEndOf="@+id/clientInfo"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/clientInfo"
         app:layout_constraintTop_toBottomOf="@+id/clientInfo" />
 
@@ -80,30 +80,31 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
         android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@+id/frameLayout"
         app:layout_constraintEnd_toEndOf="@+id/address"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/address"
-        app:layout_constraintTop_toBottomOf="@+id/address" />
+        app:layout_constraintTop_toBottomOf="@+id/address"
+        app:layout_constraintVertical_bias="0.0" />
 
     <ProgressBar
         android:id="@+id/countdownPro"
+        style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="200dp"
         android:layout_height="200dp"
-        android:indeterminate="false"
-        android:progressDrawable="@drawable/circular_progress_bar"
-        android:background="@drawable/circle_shape"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:max="100"
-        android:progress="100"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="64dp"
+        android:background="@drawable/circle_shape"
+        android:indeterminate="false"
+        android:max="100"
+        android:progress="100"
+        android:progressDrawable="@drawable/circular_progress_bar"
         app:layout_constraintBottom_toTopOf="@+id/acceptBtn"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/request"
-        app:layout_constraintVertical_bias="0.996" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/countdown"
@@ -118,4 +119,39 @@
         app:layout_constraintEnd_toEndOf="@+id/countdownPro"
         app:layout_constraintStart_toStartOf="@+id/countdownPro"
         app:layout_constraintTop_toTopOf="@+id/countdownPro" />
+
+    <LinearLayout
+        android:id="@+id/frameLayout"
+        android:layout_width="0dp"
+        android:layout_height="70dp"
+        android:layout_marginBottom="64dp"
+        android:background="@color/colorOpacity"
+        app:layout_constraintBottom_toTopOf="@+id/countdownPro"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:weightSum="2"
+        android:translationZ="10dp"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <TextView
+            android:id="@+id/price"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:layout_marginLeft="16dp"
+            android:textColor="#000000"
+            android:textSize="24sp"/>
+
+        <TextView
+            android:id="@+id/distance"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginRight="16dp"
+            android:gravity="right|center_vertical"
+            android:textColor="#000000"
+            android:textSize="22sp"
+            android:textStyle="italic" />
+    </LinearLayout>
+
 </android.support.constraint.ConstraintLayout>

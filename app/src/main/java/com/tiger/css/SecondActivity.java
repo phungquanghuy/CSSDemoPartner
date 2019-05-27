@@ -2,6 +2,9 @@ package com.tiger.css;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
 import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
@@ -13,22 +16,28 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.maps.android.SphericalUtil;
 import com.squareup.picasso.Picasso;
 import com.tiger.css.object.Client;
 import com.tiger.css.object.Partner;
 import com.tiger.css.util.ProgressBarAnimation;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
 
 public class SecondActivity extends AppCompatActivity {
 
     private Client mClient = new Client();
     private Partner mPartner = new Partner();
     private ImageView clientAvt,partnerAvt;
-    private TextView clientInfo, title, request, address, countdown;
+    private TextView clientInfo, title, request, address, countdown, price, distance;
     private Button acceptBtn, cancelBtn;
     private long countSeconds = 21000;
     private CountDownTimer mCountDownTimer;
@@ -57,9 +66,11 @@ public class SecondActivity extends AppCompatActivity {
         acceptBtn =  findViewById(R.id.acceptBtn);
         cancelBtn =  findViewById(R.id.cancelBtn);
         countdownPro =  findViewById(R.id.countdownPro);
+        price =  findViewById(R.id.price);
+        distance =  findViewById(R.id.distance);
 
         ProgressBarAnimation anim = new ProgressBarAnimation(countdownPro, 100, 0);
-        anim.setDuration(22000);
+        anim.setDuration(21000);
         countdownPro.startAnimation(anim);
 
         partnerFb = FirebaseDatabase.getInstance();
@@ -87,6 +98,14 @@ public class SecondActivity extends AppCompatActivity {
         });
     }
 
+    private String locationName(LatLng latLng) throws IOException {
+        Geocoder geocode = new Geocoder(SecondActivity.this, Locale.getDefault());
+        List<Address> listAddress = geocode.getFromLocation(latLng.latitude, latLng.longitude, 100);
+        Address address = listAddress.get(0);
+
+        return address.getAddressLine(0);
+    }
+
     protected void getInfo(){
         partnerDb.child(mPartner.getUsername()).addValueEventListener(new ValueEventListener() {
             @Override
@@ -104,10 +123,13 @@ public class SecondActivity extends AppCompatActivity {
                     }
                 }
                 if(mPartner.getStatus().equals("paired")){
-                    clientDb.child(mPartner.getClientUsn()).child("status").setValue(mPartner.getUsername());
-                    Intent intent = new Intent(SecondActivity.this,ThirdActivity.class);
-                    SecondActivity.this.startActivity(intent);
-                    finish();
+                    if(check){
+                        check = false;
+                        clientDb.child(mPartner.getClientUsn()).child("status").setValue(mPartner.getUsername());
+                        Intent intent = new Intent(SecondActivity.this,ThirdActivity.class);
+                        SecondActivity.this.startActivity(intent);
+                        finish();
+                    }
                 }
                 clientDb.child(mPartner.getClientUsn()).addValueEventListener(new ValueEventListener() {
                     @SuppressLint("SetTextI18n")
@@ -120,6 +142,20 @@ public class SecondActivity extends AppCompatActivity {
                         title.setText("Mã khách hàng: CSS-"+ mClient.getUsername());
                         address.setText("Địa chỉ: "+mClient.getAddress());
                         request.setText("Yêu cầu hỗ trợ: "+ mClient.getRequest());
+                        price.setText(mClient.getPrice());
+
+                        LatLng to = new LatLng(Double.valueOf(mClient.getLat()),Double.valueOf(mClient.getLng()));
+                        LatLng from = new LatLng(Double.valueOf(mPartner.getLat()),Double.valueOf(mPartner.getLng()));
+                        double dis = Math.round(SphericalUtil.computeDistanceBetween(from, to)/100);
+                        distance.setText(dis/10+"km");
+
+                        try {
+                            clientDb.child(mPartner.getClientUsn()).child("address").setValue(locationName(to));
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+
                     }
 
                     @Override
