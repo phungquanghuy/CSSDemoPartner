@@ -182,7 +182,7 @@ public class ThirdActivity extends AppCompatActivity implements LocationListener
         mMap.setIndoorEnabled(true);
         mMap.setTrafficEnabled(true);
         UiSettings mUiSettings = mMap.getUiSettings();
-        mUiSettings.setZoomControlsEnabled(true);
+        mUiSettings.setZoomControlsEnabled(false);
         mUiSettings.setCompassEnabled(true);
         mUiSettings.setMyLocationButtonEnabled(true);
         mUiSettings.setScrollGesturesEnabled(true);
