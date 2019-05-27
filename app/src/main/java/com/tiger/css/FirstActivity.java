@@ -182,14 +182,14 @@ public class FirstActivity extends AppCompatActivity implements LocationListener
 //                myMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,17));
 
 //                myMap.moveCamera(CameraUpdateFactory.zoomBy(16));
-                // Sét đặt sự kiện thời điểm GoogleMap đã sẵn sàng.
-                LatLng latLng = new LatLng(locateGPS().getLatitude(),locateGPS().getLongitude());
-                if (checkPermission()){
-                    myMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,16));
-                }
+
             }
         });
-
+        // Sét đặt sự kiện thời điểm GoogleMap đã sẵn sàng.
+        LatLng latLng = new LatLng(locateGPS().getLatitude(),locateGPS().getLongitude());
+        if (checkPermission()){
+            myMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,16));
+        }
         myMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         myMap.getUiSettings().setZoomControlsEnabled(false);
         if (checkPermission()){

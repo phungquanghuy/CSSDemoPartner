@@ -85,6 +85,7 @@ public class ThirdActivity extends AppCompatActivity implements LocationListener
         price = findViewById(R.id.price);
         title = findViewById(R.id.title);
 
+
         // Tạo Progress Bar
         myProgress = new ProgressDialog(this);
         myProgress.setTitle("Bản đồ đang tải ...");
@@ -97,6 +98,9 @@ public class ThirdActivity extends AppCompatActivity implements LocationListener
         mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.thirdMap);
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         Location location = locateGPS();
+
+        listStep = new ArrayList<LatLng>();
+        polyline = new PolylineOptions();
 
         mapFragment.getMapAsync(new OnMapReadyCallback() {
             @Override
@@ -221,14 +225,41 @@ public class ThirdActivity extends AppCompatActivity implements LocationListener
 //                myMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,17));
 
 //                myMap.moveCamera(CameraUpdateFactory.zoomBy(16));
-                // Sét đặt sự kiện thời điểm GoogleMap đã sẵn sàng.
-                LatLng latLng = new LatLng(locateGPS().getLatitude(),locateGPS().getLongitude());
-                if (checkPermission()){
-                    myMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,16));
-                }
+                @SuppressLint("StaticFieldLeak") final AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
+
+                    @Override
+                    protected Void doInBackground(Void... params) {
+
+                        // 227 Nguyễn Văn Cừ : 10.762643, 106.682079
+                        // Phố đi bộ Nguyễn Huệ : 10.774467, 106.703274
+
+                        String request = makeURL("10.762643","106.682079","10.774467","106.703274");
+                        GetDirectionsTask task = new GetDirectionsTask(request);
+                        ArrayList<LatLng> list = task.testDirection();
+                        for (LatLng latLng : list) {
+                            listStep.add(latLng);
+                        }
+                        return null;
+                    }
+                    @Override
+                    protected void onPostExecute(Void result) {
+                        // TODO Auto-generated method stub
+                        super.onPostExecute(result);
+                        polyline.addAll(listStep);
+                        Polyline line = myMap.addPolyline(polyline);
+                        line.setColor(Color.BLUE);
+                        line.setWidth(5);
+                    }
+                };
+                task.execute();
+
             }
         });
-
+        // Sét đặt sự kiện thời điểm GoogleMap đã sẵn sàng.
+        LatLng latLng = new LatLng(locateGPS().getLatitude(),locateGPS().getLongitude());
+        if (checkPermission()){
+            myMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,16));
+        }
         myMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         myMap.getUiSettings().setZoomControlsEnabled(false);
         if (checkPermission()){
