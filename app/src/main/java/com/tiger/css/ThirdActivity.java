@@ -120,7 +120,13 @@ public class ThirdActivity extends AppCompatActivity implements LocationListener
         finish.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                partnerDb.child(mPartner.getUsername()).child("status").setValue("actived");
+                if(check){
+                    partnerDb.child(mPartner.getUsername()).child("status").setValue("actived");
+                    clientDb.child(mPartner.getClientUsn()).child("status").setValue("available");
+                    Intent intent = new Intent(ThirdActivity.this,FirstActivity.class);
+                    ThirdActivity.this.startActivity(intent);
+                    finish();
+                }
             }
         });
     }
@@ -201,17 +207,6 @@ public class ThirdActivity extends AppCompatActivity implements LocationListener
                 mPartner = dataSnapshot.getValue(Partner.class);
                 Picasso.get().load(mPartner.getUrl()).into(partnerAvt);
 
-                if(mPartner.getStatus().equals("offline")
-                        || mPartner.getStatus().equals("actived")
-                ){
-                    if(check){
-                        check = false;
-                        clientDb.child(mPartner.getClientUsn()).child("status").setValue("available");
-                        Intent intent = new Intent(ThirdActivity.this,FirstActivity.class);
-                        ThirdActivity.this.startActivity(intent);
-                        finish();
-                    }
-                }
                 clientDb.child(mPartner.getClientUsn()).addValueEventListener(new ValueEventListener() {
                     @SuppressLint("SetTextI18n")
                     @Override
@@ -226,7 +221,6 @@ public class ThirdActivity extends AppCompatActivity implements LocationListener
                             call.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
-                                    check = false;
                                     Intent intent = new Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", mClient.getPhone(), null));
                                     startActivity(intent);
                                 }
@@ -244,7 +238,6 @@ public class ThirdActivity extends AppCompatActivity implements LocationListener
                                     Uri gmmIntentUri = Uri.parse("google.navigation:q="+mClient.getAddress());
                                     Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
                                     mapIntent.setPackage("com.google.android.apps.maps");
-                                    check = false;
                                     startActivity(mapIntent);
                                 }
                             });
