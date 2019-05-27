@@ -222,13 +222,15 @@ public class ThirdActivity extends AppCompatActivity implements LocationListener
                         clientName.setText(mClient.getName());
                         price.setText("Giá : "+mClient.getPrice());
                         title.setText("Mã khách hàng: CSS-"+ mClient.getUsername());
-                        call.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                Intent intent = new Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", mClient.getPhone(), null));
-                                startActivity(intent);
-                            }
-                        });
+                        if (check){
+                            call.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Intent intent = new Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", mClient.getPhone(), null));
+                                    startActivity(intent);
+                                }
+                            });
+                        }
                         LatLng latLng2 = new LatLng(Double.valueOf(mClient.getLat()),Double.valueOf(mClient.getLng()));
                         MarkerOptions option=new MarkerOptions();
                         option.position(latLng2);
