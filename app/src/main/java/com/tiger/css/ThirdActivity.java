@@ -249,6 +249,7 @@ public class ThirdActivity extends AppCompatActivity implements LocationListener
                                 }
                             });
                         }
+                        myMap.animateCamera(CameraUpdateFactory.newLatLng(latLng2));
                     }
 
                     @Override
