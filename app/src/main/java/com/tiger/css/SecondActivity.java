@@ -96,14 +96,6 @@ public class SecondActivity extends AppCompatActivity {
         });
     }
 
-    private String locationName(LatLng latLng) throws IOException {
-        Geocoder geocode = new Geocoder(SecondActivity.this, Locale.getDefault());
-        List<Address> listAddress = geocode.getFromLocation(latLng.latitude, latLng.longitude, 100);
-        Address address = listAddress.get(0);
-
-        return address.getAddressLine(0);
-    }
-
     protected void getInfo(){
         partnerDb.child(mPartner.getUsername()).addValueEventListener(new ValueEventListener() {
             @Override
@@ -146,15 +138,6 @@ public class SecondActivity extends AppCompatActivity {
                         LatLng from = new LatLng(Double.valueOf(mPartner.getLat()),Double.valueOf(mPartner.getLng()));
                         double dis = Math.round(SphericalUtil.computeDistanceBetween(from, to)/100);
                         distance.setText(dis/10+"km");
-
-                        if(check){
-                            try {
-                                clientDb.child(mPartner.getClientUsn()).child("address").setValue(locationName(to));
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }
-
                     }
 
                     @Override
